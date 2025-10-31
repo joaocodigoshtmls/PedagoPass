@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -14,3 +15,8 @@ const nextConfig = {
 }
 
 export default nextConfig
+=======
+import nextConfig from './next.config.js';
+
+export default nextConfig;
+>>>>>>> efbbf19 (chore4)

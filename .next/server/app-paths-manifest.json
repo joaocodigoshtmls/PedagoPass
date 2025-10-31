@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "/page": "app/page.js",
   "/comunidades/[slug]/page": "app/comunidades/[slug]/page.js",
@@ -6,3 +7,6 @@
   "/perfil/page": "app/perfil/page.js",
   "/api/me/route": "app/api/me/route.js"
 }
+=======
+{}
+>>>>>>> efbbf19 (chore4)
