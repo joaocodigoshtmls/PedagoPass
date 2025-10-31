@@ -3,5 +3,6 @@
   "/comunidades/[slug]/page": "app/comunidades/[slug]/page.js",
   "/comunidades/page": "app/comunidades/page.js",
   "/destinos/[slug]/page": "app/destinos/[slug]/page.js",
-  "/perfil/page": "app/perfil/page.js"
+  "/perfil/page": "app/perfil/page.js",
+  "/api/me/route": "app/api/me/route.js"
 }

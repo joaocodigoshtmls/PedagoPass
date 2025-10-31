@@ -18,10 +18,10 @@ npm run dev
 
 2) Configure o front para apontar para o backend
 
-Defina `NEXT_PUBLIC_BACKEND_URL` (por exemplo, em `.env.local` na raiz) ou use o default `http://localhost:4000`.
+Defina `NEXT_PUBLIC_API_URL` (por exemplo, em `.env.local` na raiz) ou use o default `http://localhost:8080`.
 
 ```
-NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
 3) Rode o front normalmente (Next.js)
