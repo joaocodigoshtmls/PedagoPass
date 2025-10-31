@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FilterBar } from '@/components/FilterBar';
 import { CommunityCard } from '@/components/community-card';
 import { EmptyState } from '@/components/EmptyState';
-import { getBackendUrl } from '@/lib/api';
+import { COMMUNITIES } from '@/data/communities';
 
 const COMMUNITIES_PER_PAGE = 9;
 const SORT_VALUES = ['populares', 'recentes', 'az'] as const;
@@ -20,22 +20,16 @@ export const metadata: Metadata = {
     'Encontre comunidades temáticas de educadores viajantes, filtre por interesses e entre em grupos para trocar experiências.',
 };
 
-type Community = {
-  slug: string;
-  nome: string;
-  descricao: string;
-  membros: number;
-  tags: string[];
-  capa?: string;
-};
+type Community = (typeof COMMUNITIES)[number];
 
-async function fetchCommunities(): Promise<Community[]> {
-  const base = getBackendUrl();
-  const res = await fetch(`${base}/communities`, { next: { revalidate: 60 } });
-  if (!res.ok) return [];
-  const data = await res.json().catch(() => ({ communities: [] }));
-  return data.communities ?? [];
-}
+const normalizeText = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .toLowerCase()
+    .trim();
+
+const tokenize = (value: string) => normalizeText(value).split(/\s+/).filter(Boolean);
 
 const formatSort = (value: string | undefined): SortValue => {
   if (SORT_VALUES.includes(value as SortValue)) {
@@ -52,17 +46,29 @@ const normalizeTags = (value: string | string[] | undefined): string[] => {
   return value.split(',').filter(Boolean);
 };
 
-const filterByQuery = (value: string, target: { nome: string; descricao: string }) => {
+const filterByQuery = (value: string, target: Community) => {
   if (!value.trim()) return true;
-  const normalized = value.trim().toLowerCase();
-  return (
-    target.nome.toLowerCase().includes(normalized) || target.descricao.toLowerCase().includes(normalized)
+  const queryTokens = tokenize(value).filter(Boolean);
+  if (!queryTokens.length) return true;
+
+  const targetTokens = Array.from(
+    new Set([
+      ...tokenize(target.nome),
+      ...tokenize(target.descricao ?? ''),
+      ...tokenize(target.slug),
+      ...target.tags.flatMap((tag) => tokenize(tag)),
+    ])
+  );
+
+  return queryTokens.every((token) =>
+    targetTokens.some((candidate) => candidate.startsWith(token))
   );
 };
 
 const filterByTags = (selectedTags: string[], targetTags: string[]) => {
   if (!selectedTags.length) return true;
-  return selectedTags.every((tag) => targetTags.some((candidate) => candidate.toLowerCase() === tag.toLowerCase()));
+  const normalizedTarget = targetTags.map((tag) => normalizeText(tag));
+  return selectedTags.every((tag) => normalizedTarget.includes(normalizeText(tag)));
 };
 
 const sortCommunities = (sort: SortValue) => {
@@ -85,7 +91,8 @@ export default async function ComunidadesPage({ searchParams }: ComunidadesPageP
   const currentPageParam = Array.isArray(searchParams.page) ? searchParams.page[0] : searchParams.page;
   const currentPage = Math.max(parseInt(currentPageParam ?? '1', 10) || 1, 1);
 
-  const communities = await fetchCommunities();
+  // Usa os dados locais diretamente para evitar chamadas HTTP internas
+  const communities: Community[] = COMMUNITIES;
   const allTags = Array.from(new Set(communities.flatMap((community) => community.tags)));
 
   const filtered = communities.filter((community) => {

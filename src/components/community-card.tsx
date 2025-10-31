@@ -8,25 +8,16 @@ import type { Community } from '@/data/communities';
 
 const formatter = new Intl.NumberFormat('pt-BR');
 
-const FALLBACK_GALLERY = [
-  'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1500930855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=80',
-];
+// Sem fallback fotográfico para evitar imagens fora de contexto;
+// quando não houver capa, o card exibe apenas o conteúdo textual.
 
 export function CommunityCard({ c }: { c: Community }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const galleryImages = useMemo(() => {
-    const sources = [
-      ...(c.galeria ?? []),
-      ...(c.capa ? [c.capa] : []),
-      ...FALLBACK_GALLERY,
-    ].filter((src): src is string => Boolean(src));
-
-    return Array.from(new Set(sources)).slice(0, 2);
-  }, [c.galeria, c.capa]);
+    // Exibir apenas UMA imagem por comunidade (somente a capa, se existir)
+    return c.capa ? [c.capa] : [];
+  }, [c.capa]);
 
   const handlePrevImage = (e: React.MouseEvent) => {
     e.preventDefault();

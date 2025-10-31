@@ -1,9 +1,7 @@
 {
-  "/perfil/page": "app/perfil/page.js",
-  "/explorar/page": "app/explorar/page.js",
-  "/comunidades/page": "app/comunidades/page.js",
+  "/page": "app/page.js",
   "/comunidades/[slug]/page": "app/comunidades/[slug]/page.js",
-  "/login/page": "app/login/page.js",
-  "/destinos/page": "app/destinos/page.js",
-  "/destinos/[slug]/page": "app/destinos/[slug]/page.js"
+  "/comunidades/page": "app/comunidades/page.js",
+  "/destinos/[slug]/page": "app/destinos/[slug]/page.js",
+  "/perfil/page": "app/perfil/page.js"
 }

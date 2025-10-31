@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CommunityClient } from './community-client';
 import { COMMUNITY_POSTS } from '@/data/communityPosts';
-import { getBackendUrl } from '@/lib/api';
+import { COMMUNITIES } from '@/data/communities';
 
 const POSTS_PER_PAGE = 10;
 
@@ -11,21 +11,11 @@ type PageProps = {
   searchParams: Record<string, string | string[] | undefined>;
 };
 
-type Community = {
-  slug: string;
-  nome: string;
-  descricao: string;
-  membros: number;
-  tags: string[];
-  capa?: string;
-};
+type Community = (typeof COMMUNITIES)[number];
 
 async function fetchCommunity(slug: string): Promise<Community | null> {
-  const base = getBackendUrl();
-  const res = await fetch(`${base}/communities/${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
-  if (!res.ok) return null;
-  const data = await res.json().catch(() => ({ community: null }));
-  return data.community ?? null;
+  const community = COMMUNITIES.find((c) => c.slug === slug) || null;
+  return community;
 }
 
 const createAboutSections = (community: Community): string[] => {

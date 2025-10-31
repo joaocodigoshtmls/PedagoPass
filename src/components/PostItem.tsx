@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
-import type { Post } from '@/data/communityPosts';
+import type { Post, PostComment } from '@/data/communityPosts';
 
 function formatRelativeTime(isoDate: string): string {
   const date = new Date(isoDate);
@@ -43,9 +43,12 @@ function getInitials(name: string) {
 
 export function PostItem({ post }: { post: Post }) {
   const [likes, setLikes] = useState(post.likes);
-  const [replies, setReplies] = useState(post.replies);
+  const initialComments = useMemo(() => post.comments ?? [], [post.comments]);
+  const [commentList, setCommentList] = useState<PostComment[]>(initialComments);
+  const [replies, setReplies] = useState(post.replies || initialComments.length);
   const [isReplyOpen, setIsReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [commentsOpen, setCommentsOpen] = useState(initialComments.length > 0);
 
   const relativeTime = useMemo(() => formatRelativeTime(post.createdAt), [post.createdAt]);
   const initials = useMemo(() => getInitials(post.autor), [post.autor]);
@@ -56,6 +59,7 @@ export function PostItem({ post }: { post: Post }) {
   };
 
   const handleReplyToggle = () => {
+    if (!commentsOpen) setCommentsOpen(true);
     setIsReplyOpen((prev) => !prev);
     if (isReplyOpen) {
       setReplyText('');
@@ -65,7 +69,15 @@ export function PostItem({ post }: { post: Post }) {
   const handleReplySubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!replyText.trim()) return;
+    const newComment: PostComment = {
+      id: `${post.id}-reply-${Date.now()}`,
+      autor: 'Você',
+      conteudo: replyText.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    setCommentList((prev) => [newComment, ...prev]);
     setReplies((prev) => prev + 1);
+    setCommentsOpen(true);
     setReplyText('');
     setIsReplyOpen(false);
   };
@@ -124,13 +136,51 @@ export function PostItem({ post }: { post: Post }) {
         </button>
         <button
           type="button"
-          onClick={handleReplyToggle}
-          aria-expanded={isReplyOpen}
+          onClick={() => setCommentsOpen((prev) => !prev)}
+          aria-expanded={commentsOpen}
           className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-primary-400 hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-slate-300 dark:hover:border-primary-400 dark:hover:text-primary-200 dark:focus-visible:ring-offset-slate-900"
         >
           💬 {replies}
         </button>
+        <button
+          type="button"
+          onClick={handleReplyToggle}
+          aria-expanded={isReplyOpen}
+          className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-primary-400 hover:text-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:text-slate-300 dark:hover:border-primary-400 dark:hover:text-primary-200 dark:focus-visible:ring-offset-slate-900"
+        >
+          ✏️ Responder
+        </button>
       </div>
+
+      {commentsOpen && commentList.length > 0 && (
+        <div className="mt-4 space-y-3 border-l border-slate-200 pl-4 dark:border-slate-700">
+          {commentList.map((comment) => {
+            const commentTime = formatRelativeTime(comment.createdAt);
+            const initialsComment = getInitials(comment.autor);
+            const avatarStyleComment = avatarColors[comment.autor.length % avatarColors.length];
+            return (
+              <div key={comment.id} className="flex items-start gap-3">
+                <span
+                  aria-hidden="true"
+                  className={clsx('flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold', avatarStyleComment)}
+                >
+                  {initialsComment}
+                </span>
+                <div className="flex-1 rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/70">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">{comment.autor}</span>
+                    <span className="text-slate-500 dark:text-slate-400">{commentTime}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">{comment.conteudo}</p>
+                  {typeof comment.likes === 'number' && (
+                    <span className="mt-2 inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">❤️ {comment.likes}</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {isReplyOpen && (
         <form onSubmit={handleReplySubmit} className="mt-4 space-y-3" aria-label="Responder ao post">

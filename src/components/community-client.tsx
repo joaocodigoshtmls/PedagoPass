@@ -11,12 +11,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { PhotoCarousel } from '@/components/PhotoCarousel';
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
-const FALLBACK_GALLERY = [
-  'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
-];
+const FALLBACK_IMAGE =
+  'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=80';
 
 type CommunityClientProps = {
   community: Community;
@@ -97,19 +93,15 @@ export function CommunityClient({
   ];
 
   const galleryImages = useMemo(() => {
-    const sources = [
-      ...(community.galeria ?? []),
-      ...(community.capa ? [community.capa] : []),
-      ...FALLBACK_GALLERY,
-    ].filter((src): src is string => Boolean(src));
-
-    const uniqueSources = Array.from(new Set(sources));
-
-    return uniqueSources.slice(0, 4).map((src, index) => ({
-      src,
-      alt: `Foto ${index + 1} da comunidade ${community.nome}`,
-    }));
-  }, [community.galeria, community.capa, community.nome]);
+    // Exibir apenas uma foto (capa) na página da comunidade. Se não houver, usa fallback único.
+    const src = community.capa || FALLBACK_IMAGE;
+    return [
+      {
+        src,
+        alt: `Capa da comunidade ${community.nome}`,
+      },
+    ];
+  }, [community.capa, community.nome]);
 
   const tagList = useMemo(
     () => community.tags.map((tag) => (

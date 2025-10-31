@@ -2,12 +2,12 @@
 import { useAuth } from "@/components/auth-provider";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiChangePassword, apiGetMyReservations, apiGetMyOrders, apiMarkReservationPaid, apiUpdateReservationStatus, apiGetOrderByReservationId, type Reservation, type Order } from "@/lib/api";
 import { formatBRL } from "@/lib/utils";
 
 export default function ProfileClient() {
-  const { user, logout, memberships, leaveCommunity: leaveCommunityCtx, refreshMemberships } = useAuth();
+  const { user, logout, memberships, leaveCommunity: leaveCommunityCtx, refreshMemberships, avatarUrl, updateAvatar, clearAvatar } = useAuth();
   const [reservas, setReservas] = useState<Reservation[]>([]);
   const [compras, setCompras] = useState<Order[]>([]);
   const [actionMsg, setActionMsg] = useState<string | null>(null);
@@ -22,6 +22,9 @@ export default function ProfileClient() {
   const [pwdErr, setPwdErr] = useState<string | null>(null);
   const [pwdOk, setPwdOk] = useState<string | null>(null);
   const [pwdLoading, setPwdLoading] = useState(false);
+  const [avatarMsg, setAvatarMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   async function copyEmail(email: string) {
     try {
@@ -32,9 +35,14 @@ export default function ProfileClient() {
   }
 
   useEffect(() => {
-    if (!user) return;
-  apiGetMyReservations().then(setReservas);
-  apiGetMyOrders().then(setCompras);
+    if (!user) {
+      setReservas([]);
+      setCompras([]);
+      return;
+    }
+
+    apiGetMyReservations().then(setReservas);
+    apiGetMyOrders().then(setCompras);
     refreshMemberships();
   }, [user, refreshMemberships]);
 
@@ -67,9 +75,83 @@ export default function ProfileClient() {
       <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 shadow-soft-md">
         <div className="bg-hero-gradient/40 p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary-600 text-white text-lg font-semibold">
-              {initials}
-            </span>
+            <div className="flex flex-col items-center gap-2">
+              <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-primary-600 text-white text-lg font-semibold">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={`Foto de perfil de ${user.nome}`}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                    unoptimized
+                  />
+                ) : (
+                  initials || user.nome[0]
+                )}
+              </span>
+              <div className="flex flex-col items-center gap-1 text-xs text-slate-600 dark:text-slate-300">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 transition hover:border-primary-400 hover:text-primary-700 focus-ring dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  disabled={avatarLoading}
+                >
+                  {avatarLoading ? "Carregando…" : avatarUrl ? "Trocar foto" : "Adicionar foto"}
+                </button>
+                {avatarUrl && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!user) return;
+                      clearAvatar();
+                      setAvatarMsg({ type: "success", text: "Foto removida." });
+                      setTimeout(() => setAvatarMsg(null), 2500);
+                    }}
+                    className="rounded-md px-2 py-1 text-xs text-slate-500 transition hover:text-red-600 focus-ring"
+                  >
+                    Remover
+                  </button>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) {
+                      setAvatarMsg({ type: "error", text: "Envie uma imagem de até 2MB." });
+                      setTimeout(() => setAvatarMsg(null), 2500);
+                      event.target.value = "";
+                      return;
+                    }
+                    setAvatarLoading(true);
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      const result = typeof reader.result === "string" ? reader.result : null;
+                      if (result) {
+                        if (user) updateAvatar(result);
+                        setAvatarMsg({ type: "success", text: "Foto atualizada!" });
+                      } else {
+                        setAvatarMsg({ type: "error", text: "Não foi possível carregar a imagem." });
+                      }
+                      setAvatarLoading(false);
+                      setTimeout(() => setAvatarMsg(null), 2500);
+                      event.target.value = "";
+                    };
+                    reader.onerror = () => {
+                      setAvatarLoading(false);
+                      setAvatarMsg({ type: "error", text: "Erro ao ler o arquivo." });
+                      setTimeout(() => setAvatarMsg(null), 2500);
+                      event.target.value = "";
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                />
+              </div>
+            </div>
             <div className="flex-1 min-w-0">
               <div className="text-xl font-semibold truncate">{user.nome}</div>
               <div className="mt-0.5 text-sm text-slate-700 dark:text-slate-300 truncate flex items-center gap-2">
@@ -93,6 +175,17 @@ export default function ProfileClient() {
               <button onClick={logout} className="px-3 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white focus-ring">Sair</button>
             </div>
           </div>
+          {avatarMsg && (
+            <div
+              className={`mt-4 rounded-xl border px-3 py-2 text-xs sm:ml-[4.5rem] ${
+                avatarMsg.type === "success"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-200"
+                  : "border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-200"
+              }`}
+            >
+              {avatarMsg.text}
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
@@ -11,7 +12,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
-  const { user, logout } = useAuth();
+  const { user, logout, avatarUrl } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -42,6 +43,8 @@ export function Navbar() {
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
+
+  const initials = user ? user.nome.split(" ").map(n => n[0]).slice(0, 2).join("") : "";
 
   return (
     <header
@@ -82,8 +85,12 @@ export function Navbar() {
           {user ? (
             <div className="flex items-center gap-3">
               <Link href="/perfil" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 focus-ring">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-600 text-white text-xs">
-                  {user.nome.split(" ").map(n=>n[0]).slice(0,2).join("")}
+                <span className="relative inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-primary-600 text-white text-xs">
+                  {avatarUrl ? (
+                    <Image src={avatarUrl} alt={`Foto de ${user.nome}`} fill className="object-cover" sizes="24px" unoptimized />
+                  ) : (
+                    initials
+                  )}
                 </span>
                 <span className="max-w-[12ch] truncate">{user.nome}</span>
               </Link>

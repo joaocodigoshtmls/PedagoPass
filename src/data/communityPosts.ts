@@ -1,3 +1,11 @@
+export type PostComment = {
+  id: string;
+  autor: string;
+  conteudo: string;
+  createdAt: string;
+  likes?: number;
+};
+
 export type Post = {
   id: string;
   autor: string;
@@ -8,6 +16,7 @@ export type Post = {
   likes: number;
   replies: number;
   tags?: string[];
+  comments?: PostComment[];
 };
 
 export const COMMUNITY_POSTS: Record<string, Post[]> = {
@@ -18,8 +27,23 @@ export const COMMUNITY_POSTS: Record<string, Post[]> = {
       conteudo: 'Compartilhei um roteiro em Ouro Preto com mediação gamificada. Incluí QR codes para pistas históricas nas ruas.',
       createdAt: '2025-10-02T12:15:00.000Z',
       likes: 24,
-      replies: 6,
+  replies: 2,
       tags: ['Patrimônio', 'Gamificação'],
+      comments: [
+        {
+          id: 'roteiros-historicos-1-c1',
+          autor: 'Helena Barros',
+          conteudo: 'Adorei a ideia dos QR codes! Você imprimiu em material resistente? Como lidou com o sinal?',
+          createdAt: '2025-10-03T09:10:00.000Z',
+          likes: 4,
+        },
+        {
+          id: 'roteiros-historicos-1-c2',
+          autor: 'Felipe Costa',
+          conteudo: 'Testei algo parecido em Paraty, posso compartilhar meu modelo de pista se quiser.',
+          createdAt: '2025-10-03T14:35:00.000Z',
+        },
+      ],
     },
     {
       id: 'roteiros-historicos-2',
@@ -27,8 +51,16 @@ export const COMMUNITY_POSTS: Record<string, Post[]> = {
       conteudo: 'Para São Luís, fiz um guia de personagens históricos que os alunos interpretam durante a caminhada.',
       createdAt: '2025-09-28T09:30:00.000Z',
       likes: 18,
-      replies: 4,
+  replies: 1,
       tags: ['Teatro', 'Identidade'],
+      comments: [
+        {
+          id: 'roteiros-historicos-2-c1',
+          autor: 'Daniela Gomes',
+          conteudo: 'Como você preparou as fichas dos personagens? Estou pensando em algo parecido para Salvador.',
+          createdAt: '2025-09-29T08:05:00.000Z',
+        },
+      ],
     },
     {
       id: 'roteiros-historicos-3',

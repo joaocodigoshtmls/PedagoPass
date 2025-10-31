@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import type { Post } from '@/data/communityPosts';
@@ -36,6 +37,63 @@ type TrendingTag = {
 };
 
 const numberFormatter = new Intl.NumberFormat('pt-BR');
+
+const fallbackPalette = [
+  { bg: 'bg-primary-100', text: 'text-primary-700', ring: 'ring-primary-200/60' },
+  { bg: 'bg-emerald-100', text: 'text-emerald-700', ring: 'ring-emerald-200/60' },
+  { bg: 'bg-amber-100', text: 'text-amber-700', ring: 'ring-amber-200/60' },
+  { bg: 'bg-sky-100', text: 'text-sky-700', ring: 'ring-sky-200/60' },
+];
+
+function CommunityAvatar({
+  name,
+  slug,
+  capa,
+  size = 32,
+  className,
+}: {
+  name: string;
+  slug: string;
+  capa?: string;
+  size?: number;
+  className?: string;
+}) {
+  const palette = fallbackPalette[Math.abs(slug.length) % fallbackPalette.length];
+  const initials = useMemo(() => {
+    const parts = name.trim().split(/\s+/);
+    return parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('') || 'PP';
+  }, [name]);
+
+  if (capa) {
+    return (
+      <span className={clsx('relative inline-flex shrink-0 overflow-hidden rounded-xl', className)} style={{ width: size, height: size }}>
+        <Image
+          src={capa}
+          alt={`Capa da comunidade ${name}`}
+          fill
+          sizes={`${size}px`}
+          className="object-cover"
+        />
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className={clsx(
+        'inline-flex shrink-0 items-center justify-center rounded-xl text-xs font-semibold uppercase ring-1 ring-inset',
+        palette.bg,
+        palette.text,
+        palette.ring,
+        className,
+      )}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+    >
+      {initials}
+    </span>
+  );
+}
 
 function computeTrendingTags(posts: ExplorerPost[]): TrendingTag[] {
   const counts = new Map<string, number>();
@@ -246,6 +304,13 @@ export function ExplorerFeed({ initialPosts, suggestedCommunities }: ExplorerFee
               <div key={post.id} className="space-y-2">
                 <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                   <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 dark:border-slate-700 dark:bg-slate-800">Comunidade</span>
+                  <CommunityAvatar
+                    name={post.communityNome}
+                    slug={post.communitySlug}
+                    capa={post.communityCapa}
+                    size={28}
+                    className="ring-1 ring-white/70 dark:ring-slate-900"
+                  />
                   <Link
                     href={`/comunidades/${post.communitySlug}`}
                     className="font-medium text-primary-700 transition hover:underline dark:text-primary-300"
@@ -304,17 +369,26 @@ export function ExplorerFeed({ initialPosts, suggestedCommunities }: ExplorerFee
                       className="rounded-xl border border-slate-200 p-4 text-sm transition hover:border-primary-300 dark:border-slate-700 dark:hover:border-primary-400"
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <Link
-                            href={`/comunidades/${community.slug}`}
-                            className="font-semibold text-slate-900 transition hover:underline dark:text-white"
-                          >
-                            {community.nome}
-                          </Link>
-                          <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{community.descricao}</p>
-                          <p className="mt-2 text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
-                            {numberFormatter.format(community.membros)} membros
-                          </p>
+                        <div className="flex flex-1 gap-3">
+                          <CommunityAvatar
+                            name={community.nome}
+                            slug={community.slug}
+                            capa={community.capa}
+                            size={40}
+                            className="ring-2 ring-white dark:ring-slate-800"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <Link
+                              href={`/comunidades/${community.slug}`}
+                              className="font-semibold text-slate-900 transition hover:underline dark:text-white"
+                            >
+                              {community.nome}
+                            </Link>
+                            <p className="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{community.descricao}</p>
+                            <p className="mt-2 text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                              {numberFormatter.format(community.membros)} membros
+                            </p>
+                          </div>
                         </div>
                         <button
                           type="button"

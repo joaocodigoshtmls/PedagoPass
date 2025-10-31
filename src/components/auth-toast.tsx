@@ -2,11 +2,10 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { apiQuickLogin } from "@/lib/api";
 import { useAuth } from "./auth-provider";
 
 export default function AuthToast() {
-  const { user } = useAuth();
+  const { user, quickLoginWithToken } = useAuth();
   const prevUser = useRef<typeof user>(null);
   const [open, setOpen] = useState(false);
   const [lastName, setLastName] = useState<string | null>(null);
@@ -47,22 +46,24 @@ export default function AuthToast() {
                 const exp = localStorage.getItem('pp.quickTokenExp');
                 const valid = t && exp && new Date(exp).getTime() > Date.now();
                 if (!valid) throw new Error('Quick token inválido');
-                const u = await apiQuickLogin(t!);
-                if (u) {
-                  // Limpa quick token após uso
-                  try { localStorage.removeItem('pp.quickToken'); localStorage.removeItem('pp.quickTokenExp'); } catch {}
+                const result = await quickLoginWithToken(t!);
+                if (result.ok) {
                   router.push('/perfil');
                   return;
                 }
-              } catch {}
-              finally { setBusy(false); }
+                console.warn(result.error ?? 'Falha no acesso rápido');
+              } catch (error) {
+                console.warn('Quick token inválido ou expirado.', error);
+              } finally {
+                setBusy(false);
+              }
             }}
             className="rounded-full border border-primary-200 px-3 py-1.5 text-primary-700 hover:bg-primary-50 dark:border-slate-700 dark:hover:bg-slate-800 focus-ring disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {busy? 'Entrando…' : 'Acesso rápido'}
           </button>
         )}
-        <Link href="/cadastro" className="rounded-full border border-slate-200 px-3 py-1.5 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 focus-ring">Criar conta</Link>
+  <Link href="/cadastro" className="rounded-full border border-slate-200 px-3 py-1.5 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 focus-ring">Criar conta</Link>
         <button
           aria-label="Fechar"
           onClick={() => setOpen(false)}

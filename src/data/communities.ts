@@ -23,7 +23,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Experimentos de campo, biodiversidade e parques para aulas ao ar livre.',
     membros: 1210,
     tags: ['Biologia', 'Geografia', 'Amazônia', 'Parques'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'arte-e-cultura',
@@ -31,7 +31,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Roteiros com museus, centros culturais e práticas integradas em artes.',
     membros: 975,
     tags: ['Arte', 'Museus', 'Teatro', 'Oficinas'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1472653431158-6364773b2a56?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'acessibilidade-e-inclusao',
@@ -63,7 +63,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Itinerários em fazendas pedagógicas, zonas rurais e experiências agroecológicas.',
     membros: 931,
     tags: ['Campo', 'Agroecologia', 'Sustentabilidade'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'linguas-e-intercambio',
@@ -71,7 +71,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Troca de roteiros bilíngues, intercâmbios culturais e parcerias internacionais.',
     membros: 774,
     tags: ['Idiomas', 'Intercâmbio', 'Cultura Global'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1473830394358-91588751b241?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'matematica-em-movimento',
@@ -87,6 +87,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Roteiros para trabalhar consumo consciente, empreendedorismo e projetos escolares.',
     membros: 458,
     tags: ['Finanças', 'Empreendedorismo', 'Projetos'],
+    capa: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'projetos-sustentaveis',
@@ -102,7 +103,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Integração de práticas esportivas, valores coletivos e cultura corporal em viagens.',
     membros: 542,
     tags: ['Esporte', 'Corpo', 'Bem-estar'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: '/images/esportes.jpg',
   },
   {
     slug: 'cultura-afro-brasileira',
@@ -110,7 +111,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Percursos de valorização da memória afro-brasileira, quilombos e patrimônios vivos.',
     membros: 873,
     tags: ['História', 'Identidade', 'Cultura Popular'],
-    capa: 'https://images.unsplash.com/photo-1531973576160-7125cd663d86?auto=format&fit=crop&w=900&q=80',
+    capa: '/images/olinda.jpg',
   },
   {
     slug: 'literatura-em-viagem',
@@ -126,7 +127,7 @@ export const COMMUNITIES: Community[] = [
     descricao: 'Integra História, Geografia e Sociologia em viagens investigativas.',
     membros: 989,
     tags: ['Humanas', 'Pesquisa', 'Cidadania'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'laboratorios-criativos',

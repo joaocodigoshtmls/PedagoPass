@@ -20,8 +20,9 @@ export type Community = {
 const TOKEN_KEY = 'pp.jwt';
 
 export function getBackendUrl() {
-  // Use NEXT_PUBLIC_BACKEND_URL when provided, else fallback to localhost
-  return process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+  // Prefer explicit backend URL when provided; otherwise, use Next.js API
+  // This avoids ECONNREFUSED in dev when the standalone backend is offline.
+  return process.env.NEXT_PUBLIC_BACKEND_URL || '/api';
 }
 
 export function getToken(): string | null {

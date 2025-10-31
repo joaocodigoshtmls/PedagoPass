@@ -25,7 +25,7 @@ const COMMUNITIES: Array<{
     descricao: 'Experimentos de campo, biodiversidade e parques para aulas ao ar livre.',
     membros: 1210,
     tags: ['Biologia', 'Geografia', 'Amazônia', 'Parques'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'arte-e-cultura',
@@ -33,7 +33,7 @@ const COMMUNITIES: Array<{
     descricao: 'Roteiros com museus, centros culturais e práticas integradas em artes.',
     membros: 975,
     tags: ['Arte', 'Museus', 'Teatro', 'Oficinas'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1472653431158-6364773b2a56?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'acessibilidade-e-inclusao',
@@ -65,7 +65,7 @@ const COMMUNITIES: Array<{
     descricao: 'Itinerários em fazendas pedagógicas, zonas rurais e experiências agroecológicas.',
     membros: 931,
     tags: ['Campo', 'Agroecologia', 'Sustentabilidade'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'linguas-e-intercambio',
@@ -73,7 +73,7 @@ const COMMUNITIES: Array<{
     descricao: 'Troca de roteiros bilíngues, intercâmbios culturais e parcerias internacionais.',
     membros: 774,
     tags: ['Idiomas', 'Intercâmbio', 'Cultura Global'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1473830394358-91588751b241?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'matematica-em-movimento',
@@ -104,7 +104,7 @@ const COMMUNITIES: Array<{
     descricao: 'Integração de práticas esportivas, valores coletivos e cultura corporal em viagens.',
     membros: 542,
     tags: ['Esporte', 'Corpo', 'Bem-estar'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1607013251379-e6eecfffe234?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'cultura-afro-brasileira',
@@ -128,7 +128,7 @@ const COMMUNITIES: Array<{
     descricao: 'Integra História, Geografia e Sociologia em viagens investigativas.',
     membros: 989,
     tags: ['Humanas', 'Pesquisa', 'Cidadania'],
-    capa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
+    capa: 'https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=900&q=80',
   },
   {
     slug: 'laboratorios-criativos',
