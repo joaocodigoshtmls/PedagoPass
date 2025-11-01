@@ -6,11 +6,12 @@ import { useSearchParams } from 'next/navigation';
 import LoginForm from './login-form';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = false;
+export const fetchCache = 'force-no-store';
 
 function LoginContent() {
   const params = useSearchParams();
-  const next = params.get('next') ?? '/perfil';
+  const next = params.get('next') ?? '/';
 
   return (
     <div className="container-max min-h-[calc(100vh-8rem)] py-10 flex items-center justify-center">
