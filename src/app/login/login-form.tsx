@@ -4,7 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/components/auth-provider";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginForm() {
+type LoginFormProps = {
+  nextPath?: string;
+};
+
+export default function LoginForm({ nextPath = "/perfil" }: LoginFormProps) {
   const { user, login } = useAuth();
   const router = useRouter();
   const search = useSearchParams();
@@ -41,7 +45,7 @@ export default function LoginForm() {
       setError(res.error ?? "Não foi possível entrar.");
       return;
     }
-    router.push("/perfil");
+    router.push(nextPath);
   }
 
   async function onDemo() {
@@ -54,7 +58,7 @@ export default function LoginForm() {
       setError(res.error ?? "Não foi possível entrar na conta demo.");
       return;
     }
-    router.push("/perfil");
+    router.push(nextPath);
   }
 
   return (
