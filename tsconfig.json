@@ -25,6 +25,8 @@
     "backend/**",
     "**/backend/**",
     "../backend",
-    "../backend/**"
+    "../backend/**",
+    "prisma",
+    "scripts"
   ]
 }
