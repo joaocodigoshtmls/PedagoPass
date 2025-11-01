@@ -1,25 +1,27 @@
-import { Router } from 'express';
-import { requireAuth } from '../middleware/auth';
-import { prisma } from '../prisma';
-const router = Router();
-router.get('/me', requireAuth, async (req, res) => {
-    const list = await prisma.reservation.findMany({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const prisma_1 = require("../prisma");
+const router = (0, express_1.Router)();
+router.get('/me', auth_1.requireAuth, async (req, res) => {
+    const list = await prisma_1.prisma.reservation.findMany({
         where: { userId: req.userId },
         orderBy: { createdAt: 'desc' },
     });
     return res.json({ reservations: list });
 });
-router.get('/:id', requireAuth, async (req, res) => {
-    const r = await prisma.reservation.findUnique({ where: { id: String(req.params.id) } });
+router.get('/:id', auth_1.requireAuth, async (req, res) => {
+    const r = await prisma_1.prisma.reservation.findUnique({ where: { id: String(req.params.id) } });
     if (!r || r.userId !== req.userId)
         return res.status(404).json({ error: 'Reserva não encontrada' });
     return res.json({ reservation: r });
 });
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', auth_1.requireAuth, async (req, res) => {
     const { destinoSlug, destinoNome, destinoImagem, ida, volta, pessoas, formaPagamento, totalEstimado } = req.body;
     if (!destinoSlug || !destinoNome || !ida || !volta)
         return res.status(400).json({ error: 'Parâmetros inválidos' });
-    const r = await prisma.reservation.create({
+    const r = await prisma_1.prisma.reservation.create({
         data: {
             userId: req.userId,
             destinoSlug: String(destinoSlug),
@@ -35,15 +37,16 @@ router.post('/', requireAuth, async (req, res) => {
     });
     return res.json({ ok: true, reservation: r });
 });
-router.patch('/:id/status', requireAuth, async (req, res) => {
+router.patch('/:id/status', auth_1.requireAuth, async (req, res) => {
     const id = String(req.params.id);
     const { status } = req.body;
     if (!status)
         return res.status(400).json({ error: 'Status inválido' });
-    const current = await prisma.reservation.findUnique({ where: { id } });
+    const current = await prisma_1.prisma.reservation.findUnique({ where: { id } });
     if (!current || current.userId !== req.userId)
         return res.status(404).json({ error: 'Reserva não encontrada' });
-    const r = await prisma.reservation.update({ where: { id }, data: { status } });
+    const r = await prisma_1.prisma.reservation.update({ where: { id }, data: { status } });
     return res.json({ ok: true, reservation: r });
 });
-export default router;
+exports.default = router;
+//# sourceMappingURL=reservations.js.map
