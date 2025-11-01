@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node --enable-source-maps dist/index.js",
     "build": "tsc",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
