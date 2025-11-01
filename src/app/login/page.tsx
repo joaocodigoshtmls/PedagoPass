@@ -4,10 +4,6 @@ import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import LoginForm from './login-form';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = false;
-export const fetchCache = 'force-no-store';
-
 function LoginContent() {
   const params = useSearchParams();
   const next = params.get('next') ?? '/';
