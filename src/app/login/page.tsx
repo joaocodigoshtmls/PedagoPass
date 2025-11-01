@@ -11,7 +11,7 @@ export const fetchCache = 'force-no-store';
 
 function LoginContent() {
   const params = useSearchParams();
-  const next = params.get('next') ?? '/';
+  const next = params.get('next') ?? '/perfil';
 
   return (
     <div className="container-max min-h-[calc(100vh-8rem)] py-10 flex items-center justify-center">
