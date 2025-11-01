@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import pino from 'pino';
-import { CORS_ALLOW_LIST, NODE_ENV, LOG_LEVEL } from './config';
+import { NODE_ENV, LOG_LEVEL } from './config';
 import authRoutes from './routes/auth';
 import meRoutes from './routes/me';
 import communityRoutes from './routes/communities';
@@ -17,10 +17,30 @@ const log = pino({ level: LOG_LEVEL });
 
 const app = express();
 
-// ✅ HEALTH CHECK FIRST - No middleware, no DB
+// 1) HEALTH CHECK FIRST - no middlewares, no DB
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).send('ok');
 });
+// Optional alias if using /api prefix in infra
+app.get('/api/health', (_req: Request, res: Response) => {
+  res.status(200).send('ok');
+});
+
+// 2) Basics: JSON body parsing BEFORE other middlewares
+app.use(express.json({ limit: '1mb' }));
+
+// CORS: comma-separated env list; empty list => allow all origins
+const allow = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use(cors({
+  origin(origin, cb) {
+    if (!origin || allow.length === 0 || allow.includes(origin)) return cb(null, true);
+    return cb(new Error('CORS'));
+  },
+  credentials: true,
+}));
 
 // Security & Performance
 app.use(helmet());
@@ -28,11 +48,10 @@ app.use(compression());
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
-// Body parsing (before other middleware)
-app.use(express.json({ limit: '1mb' }));
+// Other parsers/cookies
 app.use(cookieParser());
 
-// Rate limiting (300 req/min per IP)
+// 3) Rate limiting (300 req/min per IP)
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 300,
@@ -40,25 +59,13 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// CORS - parse comma-separated origins
-const allowList = CORS_ALLOW_LIST;
-app.use(cors({
-  origin(origin, cb) {
-    if (!origin || allowList.includes('*') || allowList.includes(origin)) {
-      return cb(null, true);
-    }
-    return cb(new Error('CORS blocked'));
-  },
-  credentials: true,
-}));
-
 // Request logging
 app.use((req: Request, res: Response, next: NextFunction) => {
   log.info({ method: req.method, url: req.url, ip: req.ip });
   next();
 });
 
-// Routes
+// 4) Routes
 app.use('/auth', authRoutes);
 app.use('/me', meRoutes);
 app.use('/communities', communityRoutes);
@@ -76,13 +83,13 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
-// Server startup & graceful shutdown
+// 5) Server startup & graceful shutdown (Railway injects PORT)
 const PORT = Number(process.env.PORT) || 8080;
 const HOST = '0.0.0.0'; // Bind to all interfaces
 
 const server = app.listen(PORT, HOST, () => {
   log.info({ msg: 'API up', host: HOST, port: PORT, env: NODE_ENV });
-  console.log(`✅ API listening on http://${HOST}:${PORT}`);
+  console.log(`API up on http://${HOST}:${PORT}`);
 });
 
 const close = () => {
